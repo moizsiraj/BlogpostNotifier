@@ -6,13 +6,21 @@ using System.Threading.Tasks;
 using System.IO;
 
 namespace Task_1 {
-    class BlogPost {
+    class BlogPost : ISubject{
+
+        private List<IObserver> _Observers;
 
         public BlogPost(int id, string text) {
-            
             _Id = id;
             _Text = text;
- 
+            _Observers = new List<IObserver>();
+            IObserver createNotifier = new CreateNotifier();
+            IObserver updateNotifier = new UpdateNotifier();
+            IObserver deleNotifier = new DeleteNotifier();
+            Register(createNotifier);
+            Register(updateNotifier);
+            Register(deleNotifier);
+            createNotifier.Update(this);
         }
 
         private int _Id;
@@ -31,12 +39,27 @@ namespace Task_1 {
 
         public void EditPost(string text) {
             _Text = text;
+            foreach (IObserver observer in _Observers) {
+                if (observer is UpdateNotifier updateNotifier) {
+                    updateNotifier.Update(this);
+                }
+            }
         }
 
-        public static void DeletePost(BlogPost blogPost) {
-            blogPost = null;
+        public void DeletePost() {
+            foreach (IObserver observer in _Observers) {
+                if (observer is DeleteNotifier deleteNotifier) {
+                    deleteNotifier.Update(this);   
+                }
+            }
         }
 
+        public void Register(IObserver observer) {
+            _Observers.Add(observer);
+        }
 
+        public void Notify(IObserver observer) {
+            observer.Update(this);
+        }
     }
 }
