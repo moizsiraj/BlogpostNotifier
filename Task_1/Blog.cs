@@ -23,8 +23,10 @@ namespace Task_1 {
             _Observers = new List<IObserver>();
             _BlogPosts = new List<BlogPost>();
             CreateNotifier createNotifier = new();
+            UpdateNotifier updateNotifier = new();
             DeleteNotifier deleteNotifier = new();
             Register(createNotifier);
+            Register(updateNotifier);
             Register(deleteNotifier);
         }
 
@@ -33,7 +35,7 @@ namespace Task_1 {
             foreach (IObserver observer in _Observers) {
                 
                 if (observer is CreateNotifier createNotifier) {
-                    createNotifier.Update(this);
+                    Notify(createNotifier);
                 }
             }
             
@@ -57,7 +59,7 @@ namespace Task_1 {
                     
                     foreach (IObserver observer in _Observers) {
                         if (observer is DeleteNotifier deleteNotifier) {
-                            deleteNotifier.Update(this);
+                            Notify(deleteNotifier);
                         }
                     }
                     break;
@@ -76,12 +78,13 @@ namespace Task_1 {
                     
                     foreach (IObserver observer in _Observers) {
                         if (observer is UpdateNotifier updateNotifier) {
-                            updateNotifier.Update(this);
+                            Notify(updateNotifier);
                         }
                     }
                     break;
                 }
             }
+
         }
 
         public void Register(IObserver observer) {

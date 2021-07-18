@@ -20,7 +20,7 @@ namespace Task_1 {
             Register(createNotifier);
             Register(updateNotifier);
             Register(deleNotifier);
-            createNotifier.Update(this);
+            Notify(createNotifier);
         }
 
         private int _Id;
@@ -41,7 +41,7 @@ namespace Task_1 {
             _Text = text;
             foreach (IObserver observer in _Observers) {
                 if (observer is UpdateNotifier updateNotifier) {
-                    updateNotifier.Update(this);
+                    Notify(updateNotifier);
                 }
             }
         }
@@ -49,7 +49,7 @@ namespace Task_1 {
         public void DeletePost() {
             foreach (IObserver observer in _Observers) {
                 if (observer is DeleteNotifier deleteNotifier) {
-                    deleteNotifier.Update(this);   
+                    Notify(deleteNotifier); 
                 }
             }
         }
