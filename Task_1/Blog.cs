@@ -45,46 +45,53 @@ namespace Task_1 {
         }
 
 
-        public void DeletePost(int id) {
-
+        private BlogPost GetBlogPostById(int id) {
             for (int i = 0; i < _BlogPosts.Count; i++) {
-                
+
                 if (_BlogPosts[i].Id == id) {
-                    
-                    BlogPost blogPost = _BlogPosts[i];
-                    blogPost.DeletePost();
-                    _BlogPosts.Remove(blogPost);
-                    blogPost = null;
-                    GC.Collect();
-                    
-                    foreach (IObserver observer in _Observers) {
-                        if (observer is DeleteNotifier deleteNotifier) {
-                            Notify(deleteNotifier);
-                        }
-                    }
-                    break;
+
+                    return _BlogPosts[i];
                 }
             }
+
+            return null;
+
+        }
+
+
+        public void DeletePost(int id) {
+
+            
+            BlogPost blogPost = GetBlogPostById(id);
+            if (blogPost is BlogPost post) {
+                post.DeletePost();
+                _BlogPosts.Remove(post);
+                post = null;
+                GC.Collect();
+
+                foreach (IObserver observer in _Observers) {
+                    if (observer is DeleteNotifier deleteNotifier) {
+                        Notify(deleteNotifier);
+                    }
+                }
+            }
+
         }
 
         public void EditPost(int id) {
-            for (int i = 0; i < _BlogPosts.Count; i++) {
+            
+            BlogPost blogPost = GetBlogPostById(id);
+            if (blogPost is BlogPost post) {
+                string text = Console.ReadLine();
+                post.EditPost(text);
 
-                if (_BlogPosts[i].Id == id) {
-
-                    BlogPost blogPost = _BlogPosts[i];
-                    string text = Console.ReadLine();
-                    blogPost.EditPost(text);
-                    
-                    foreach (IObserver observer in _Observers) {
-                        if (observer is UpdateNotifier updateNotifier) {
-                            Notify(updateNotifier);
-                        }
+                foreach (IObserver observer in _Observers) {
+                    if (observer is UpdateNotifier updateNotifier) {
+                        Notify(updateNotifier);
                     }
-                    break;
                 }
             }
-
+            
         }
 
         public void Register(IObserver observer) {
